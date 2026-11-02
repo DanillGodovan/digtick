@@ -107,6 +107,7 @@ class DigitalTimingDiagram():
 		self._plot_count = 0
 		self._clock_ticks = 0
 		self._markers = [ ]
+		self._layer_cache = {}
 
 	@property
 	def svg(self):
@@ -123,11 +124,14 @@ class DigitalTimingDiagram():
 
 	@functools.cache
 	def _layer(self, layer_id: "Layer"):
-		assert(isinstance(layer_id, self.Layer))
-		layer_label = layer_id.value
-		layer = self._svg.add(SVGGroup.new(is_layer = True))
-		layer.label = layer_label
-		return layer
+		assert isinstance(layer_id, self.Layer)
+
+		if layer_id not in self._layer_cache:
+			layer = self._svg.add(SVGGroup.new(is_layer=True))
+			layer.label = layer_id.value
+			self._layer_cache[layer_id] = layer
+
+		return self._layer_cache[layer_id]
 
 	def _transition_middle(self, y, transition_scale = 1):
 		transition_width = transition_scale * self._risefall * (abs(y) / self._height)
