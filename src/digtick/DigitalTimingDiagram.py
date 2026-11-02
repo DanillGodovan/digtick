@@ -20,7 +20,6 @@
 #	Johannes Bauer <JohannesBauer@gmx.de>
 
 import enum
-import functools
 import collections
 import dataclasses
 from pysvgedit import SVGDocument, SVGGroup, SVGPath, SVGText, Vector2D
@@ -101,13 +100,14 @@ class DigitalTimingDiagram():
 		self._low_high_lines = low_high_lines
 		self._use_overline = use_overline
 		self._risefall = height / 8
+		self._layer_cache = {}
 		self._svg = SVGDocument.new()
 		self._setup_layers()
 		self._path = None
 		self._plot_count = 0
 		self._clock_ticks = 0
 		self._markers = [ ]
-		self._layer_cache = {}
+
 
 	@property
 	def svg(self):
@@ -122,7 +122,6 @@ class DigitalTimingDiagram():
 		for layer in [ self.Layer.UpperLowerBoundary, self.Layer.ClockTicks, self.Layer.SignalNames, self.Layer.Signals ]:
 			self._layer(layer)
 
-	@functools.cache
 	def _layer(self, layer_id: "Layer"):
 		assert isinstance(layer_id, self.Layer)
 
